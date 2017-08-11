@@ -1,181 +1,227 @@
-drop table if exists cf_admin;
+DROP TABLE IF EXISTS cf_admin;
 
 /*==============================================================*/
 /* Table: cf_admin                                              */
 /*==============================================================*/
-create table cf_admin
+CREATE TABLE cf_admin
 (
-   id                   int not null auto_increment comment '主键',
-   login_name           varchar(32) not null comment '账号',
-   password             varchar(48) not null comment '密码',
-   real_name            varchar(32) comment '真实姓名',
-   sex                  char(1) default '1' comment '性别 1男　2女',
-   mobile               varchar(16) comment '手机号',
-   email                varchar(32) comment '邮件',
-   create_user_name     varchar(32) comment '创建人',
-   create_time          datetime comment '创建时间',
-   modify_name          varchar(32) comment '修改人名字',
-   update_time          datetime comment '更改时间',
-   first_login_time     datetime comment '第一次登录时间',
-   last_login_time      datetime comment '最后一次登录时间',
-   available_flag       boolean default true comment '是否可用',
-   super_admin          boolean default false comment '是否为超级管理员',
-   admin_desc 			tinytext COMMENT '描述',
-   primary key (id)
+  id               INT         NOT NULL AUTO_INCREMENT
+  COMMENT '主键',
+  login_name       VARCHAR(32) NOT NULL
+  COMMENT '账号',
+  password         VARCHAR(48) NOT NULL
+  COMMENT '密码',
+  real_name        VARCHAR(32) COMMENT '真实姓名',
+  sex              CHAR(1)              DEFAULT '1'
+  COMMENT '性别 1男　2女',
+  mobile           VARCHAR(16) COMMENT '手机号',
+  email            VARCHAR(32) COMMENT '邮件',
+  create_user_name VARCHAR(32) COMMENT '创建人',
+  create_time      DATETIME COMMENT '创建时间',
+  modify_name      VARCHAR(32) COMMENT '修改人名字',
+  update_time      DATETIME COMMENT '更改时间',
+  first_login_time DATETIME COMMENT '第一次登录时间',
+  last_login_time  DATETIME COMMENT '最后一次登录时间',
+  available_flag   BOOLEAN              DEFAULT TRUE
+  COMMENT '是否可用',
+  is_super         BOOLEAN              DEFAULT FALSE
+  COMMENT '是否为超级管理员',
+  admin_desc       TINYTEXT COMMENT '描述',
+  PRIMARY KEY (id)
 );
 
-alter table cf_admin comment '管理员表';
+ALTER TABLE cf_admin
+  COMMENT '管理员表';
 
-drop table if exists cf_role;
+DROP TABLE IF EXISTS cf_role;
 
 /*==============================================================*/
 /* Table: cf_role                                               */
 /*==============================================================*/
-create table cf_role
+CREATE TABLE cf_role
 (
-   id                   int not null auto_increment,
-   role_name            varchar(32) comment '角色名称',
-   role_desc            varchar(256) comment '角色描述',
-   create_name          varchar(32) comment '创建人',
-   create_time          datetime comment '创建时间',
-   role_level			tinyint default 3 comment '角色等级 1 超级  2 高级  3 普通',	
-   modify_name          varchar(32) comment '修改人',
-   modify_time          datetime comment '修改时间',
-   primary key (id)
+  id          INT NOT NULL AUTO_INCREMENT,
+  role_name   VARCHAR(32) COMMENT '角色名称',
+  role_desc   VARCHAR(256) COMMENT '角色描述',
+  create_name VARCHAR(32) COMMENT '创建人',
+  create_time DATETIME COMMENT '创建时间',
+  role_level  TINYINT      DEFAULT 3
+  COMMENT '角色等级 1 超级  2 高级  3 普通',
+  modify_name VARCHAR(32) COMMENT '修改人',
+  modify_time DATETIME COMMENT '修改时间',
+  PRIMARY KEY (id)
 );
 
-alter table cf_role comment '角色表';
+ALTER TABLE cf_role
+  COMMENT '角色表';
 
-drop table if exists cf_adminRole;
+DROP TABLE IF EXISTS cf_adminRole;
 
 /*==============================================================*/
 /* Table: cf_adminRole                                          */
 /*==============================================================*/
-create table cf_adminRole
+CREATE TABLE cf_adminRole
 (
-   id                   int not null auto_increment comment '主键',
-   admin_id             int comment '管理员id',
-   role_id              int comment '角色id',
-   primary key (id)
+  id       INT NOT NULL AUTO_INCREMENT
+  COMMENT '主键',
+  admin_id INT COMMENT '管理员id',
+  role_id  INT COMMENT '角色id',
+  PRIMARY KEY (id)
 );
 
-alter table cf_adminRole comment '管理员角色关联表';
+ALTER TABLE cf_adminRole
+  COMMENT '管理员角色关联表';
 
-alter table cf_adminRole add constraint FK_Reference_1 foreign key (role_id)
-      references cf_role (id) on delete restrict on update restrict;
+ALTER TABLE cf_adminRole
+  ADD CONSTRAINT FK_Reference_1 FOREIGN KEY (role_id)
+REFERENCES cf_role (id)
+  ON DELETE RESTRICT
+  ON UPDATE RESTRICT;
 
-alter table cf_adminRole add constraint FK_Reference_2 foreign key (admin_id)
-      references cf_admin (id) on delete restrict on update restrict;
+ALTER TABLE cf_adminRole
+  ADD CONSTRAINT FK_Reference_2 FOREIGN KEY (admin_id)
+REFERENCES cf_admin (id)
+  ON DELETE RESTRICT
+  ON UPDATE RESTRICT;
 
-      
-drop table if exists cf_privilege;
+
+DROP TABLE IF EXISTS cf_privilege;
 
 /*==============================================================*/
 /* Table: cf_privilege                                          */
 /*==============================================================*/
-create table cf_privilege
+CREATE TABLE cf_privilege
 (
-   id                   int not null auto_increment comment '主键',
-   master_type          tinyint comment '权限主体  1 角色 2 用户  ',
-   master_id            int comment '权限主体id',
-   access_type          tinyint comment '权限访问类型  1 菜单 2 按钮 3 模块',
-   access_no            smallint comment '权限访问no  menuNo或者buttonNo或者applicationCode',
-   is_operatation       boolean comment '禁止使用   默认false',
-   primary key (id)
+  id             INT NOT NULL AUTO_INCREMENT
+  COMMENT '主键',
+  master_type    TINYINT COMMENT '权限主体  1 角色 2 用户  ',
+  master_id      INT COMMENT '权限主体id',
+  access_type    TINYINT COMMENT '权限访问类型  1 菜单 2 按钮 3 模块',
+  access_no      SMALLINT COMMENT '权限访问no  menuNo或者buttonNo或者applicationCode',
+  is_operatation BOOLEAN COMMENT '禁止使用   默认false',
+  PRIMARY KEY (id)
 );
 
-alter table cf_privilege comment '管理员权限表';
+ALTER TABLE cf_privilege
+  COMMENT '管理员权限表';
 
-drop table if exists sys_application;
+DROP TABLE IF EXISTS sys_application;
 
 /*==============================================================*/
 /* Table: sys_application                                       */
 /*==============================================================*/
-create table sys_application
+CREATE TABLE sys_application
 (
-   id                   int not null auto_increment comment '主键',
-   application_code     smallint comment '模块code',
-   application_url		varchr(256) default 'index.html' comment '模块url',
-   application_icon		varchr(256) default 'Hui-iconfont-goods' comment '模块icon',
-   application_name     varchar(32) comment '模块名称',
-   application_desc     varchar(256) comment '模块描述',
-   primary key (id)
+  id               INT NOT NULL AUTO_INCREMENT
+  COMMENT '主键',
+  application_code SMALLINT COMMENT '模块code',
+  application_url  VARCHAR(256) DEFAULT 'index.html'
+  COMMENT '模块url',
+  application_icon VARCHAR(256) DEFAULT 'Hui-iconfont-goods'
+  COMMENT '模块icon',
+  application_name VARCHAR(32) COMMENT '模块名称',
+  application_desc VARCHAR(256) COMMENT '模块描述',
+  PRIMARY KEY (id)
 );
-ALTER TABLE sys_application ADD UNIQUE (application_code); 
-alter table sys_application comment '系统模块';
+ALTER TABLE sys_application
+  ADD UNIQUE (application_code);
+ALTER TABLE sys_application
+  COMMENT '系统模块';
 
 
-
-drop table if exists sys_menu;
+DROP TABLE IF EXISTS sys_menu;
 
 /*==============================================================*/
 /* Table: sys_menu                                              */
 /*==============================================================*/
-create table sys_menu
+CREATE TABLE sys_menu
 (
-   id                   int not null comment '主键',
-   menu_no              smallint comment '菜单编码',
-   application_code     smallint comment '模块code',
-   menu_parent_no       smallint comment '父菜单编码',
-   menu_order           smallint comment '菜单顺序',
-   menu_name            varchar(32) comment '菜单名称',
-   menu_url             varchar(256) comment '菜单url',
-   menu_type			smallint default 1 comment '类型   1菜单  2 按钮或链接',
-   menu_icon            varchar(256) comment '菜单icon',
-   is_visible           boolean comment '是否可用 1可用 0不可用',
-   is_leaf              boolean,
-   primary key (id)
+  id               INT NOT NULL
+  COMMENT '主键',
+  menu_no          SMALLINT COMMENT '菜单编码',
+  application_code SMALLINT COMMENT '模块code',
+  menu_parent_no   SMALLINT COMMENT '父菜单编码',
+  menu_order       SMALLINT COMMENT '菜单顺序',
+  menu_name        VARCHAR(32) COMMENT '菜单名称',
+  menu_url         VARCHAR(256) COMMENT '菜单url',
+  menu_type        SMALLINT DEFAULT 1
+  COMMENT '类型   1菜单  2 按钮或链接',
+  menu_icon        VARCHAR(256) COMMENT '菜单icon',
+  is_visible       BOOLEAN COMMENT '是否可用 1可用 0不可用',
+  is_leaf          BOOLEAN,
+  PRIMARY KEY (id)
 );
-ALTER TABLE sys_menu ADD UNIQUE (menu_no);
-alter table sys_menu comment '系统菜单表';
+ALTER TABLE sys_menu
+  ADD UNIQUE (menu_no);
+ALTER TABLE sys_menu
+  COMMENT '系统菜单表';
 
-drop table if exists sys_button;
+DROP TABLE IF EXISTS sys_button;
 
 /*==============================================================*/
 /* Table: sys_button                                            */
 /*==============================================================*/
-create table sys_button
+CREATE TABLE sys_button
 (
-   id                   int not null auto_increment comment '主键',
-   btn_no               smallint comment '按钮编码',
-   btn_name             varchar(32) comment '按钮名称',
-   btn_class            varchar(32) comment '按钮类型',
-   btn_icon             varchar(32) comment '按钮icon',
-   menu_no              int comment '所属菜单id',
-   init_status          boolean comment '初始化状态  1 可用 0 不可用',
-   primary key (id)
+  id          INT NOT NULL AUTO_INCREMENT
+  COMMENT '主键',
+  btn_no      SMALLINT COMMENT '按钮编码',
+  btn_name    VARCHAR(32) COMMENT '按钮名称',
+  btn_class   VARCHAR(32) COMMENT '按钮类型',
+  btn_icon    VARCHAR(32) COMMENT '按钮icon',
+  menu_no     INT COMMENT '所属菜单id',
+  init_status BOOLEAN COMMENT '初始化状态  1 可用 0 不可用',
+  PRIMARY KEY (id)
 );
 
-alter table sys_button comment '系统按钮表';
+ALTER TABLE sys_button
+  COMMENT '系统按钮表';
 
-create table sys_provinces
+CREATE TABLE sys_provinces
 (
-   id                   int not null auto_increment comment '主键',
-   province_code           varchar(8) not null comment '省code',
-   province_name             varchar(32) not null comment '省名称',
-   primary key (id)
+  id            INT         NOT NULL AUTO_INCREMENT
+  COMMENT '主键',
+  province_code VARCHAR(8)  NOT NULL
+  COMMENT '省code',
+  province_name VARCHAR(32) NOT NULL
+  COMMENT '省名称',
+  PRIMARY KEY (id)
 );
-alter table sys_provinces comment '省份表';  
+ALTER TABLE sys_provinces
+  COMMENT '省份表';
 
-create table sys_cities
+CREATE TABLE sys_cities
 (
-   id                   int not null auto_increment comment '主键',
-   city_code           	varchar(8) not null comment '城市code',
-   city_name             	varchar(32) not null comment '城市名称',
-   province_code 			varchar(8) NOT NULL comment '省code',
-   status 				boolean default true comment '状态 1可用 0不可用',
-   primary key (id)
+  id            INT         NOT NULL AUTO_INCREMENT
+  COMMENT '主键',
+  city_code     VARCHAR(8)  NOT NULL
+  COMMENT '城市code',
+  city_name     VARCHAR(32) NOT NULL
+  COMMENT '城市名称',
+  province_code VARCHAR(8)  NOT NULL
+  COMMENT '省code',
+  status        BOOLEAN              DEFAULT TRUE
+  COMMENT '状态 1可用 0不可用',
+  PRIMARY KEY (id)
 );
-alter table sys_cities comment '城市表';  
+ALTER TABLE sys_cities
+  COMMENT '城市表';
 
-create table sys_areas
+CREATE TABLE sys_areas
 (
-   id                   int not null auto_increment comment '主键',
-   area_code           	varchar(8) not null comment '区域code',
-   area_name             	varchar(32) not null comment '区域名称',
-   city_code 				varchar(8) NOT NULL comment '城市code',
-   status 				boolean default true comment '状态 1可用 0不可用',
-   primary key (id)
+  id        INT         NOT NULL AUTO_INCREMENT
+  COMMENT '主键',
+  area_code VARCHAR(8)  NOT NULL
+  COMMENT '区域code',
+  area_name VARCHAR(32) NOT NULL
+  COMMENT '区域名称',
+  city_code VARCHAR(8)  NOT NULL
+  COMMENT '城市code',
+  status    BOOLEAN              DEFAULT TRUE
+  COMMENT '状态 1可用 0不可用',
+  PRIMARY KEY (id)
 );
-alter table sys_areas comment '行政区域县区信息表';
+ALTER TABLE sys_areas
+  COMMENT '行政区域县区信息表';
+
 

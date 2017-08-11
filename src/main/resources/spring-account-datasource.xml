@@ -1,58 +1,74 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:tx="http://www.springframework.org/schema/tx"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
                         http://www.springframework.org/schema/beans/spring-beans-4.2.xsd 
 						http://www.springframework.org/schema/tx
 						http://www.springframework.org/schema/tx/spring-tx-4.2.xsd">
-					
+
     <!-- 数据源配置, 使用 Druid 数据库连接池 -->
-    <bean id="accountDataSource" class="com.alibaba.druid.pool.DruidDataSource" 
+    <bean id="accountDataSource" class="com.alibaba.druid.pool.DruidDataSource"
           init-method="init" destroy-method="close">
         <!-- 数据源驱动类可不写，Druid默认会自动根据URL识别DriverClass -->
-        <property name="driverClassName" value="${jdbc.driver}" />
-        <property name="url" value="${account.jdbc.url}" />
-        <property name="username" value="${account.jdbc.username}" />
-        <property name="password" value="${account.jdbc.password}" />
+        <property name="driverClassName" value="${jdbc.driver}"/>
+        <property name="url" value="${account.jdbc.url}"/>
+        <property name="username" value="${account.jdbc.username}"/>
+        <property name="password" value="${account.jdbc.password}"/>
+
         <!-- 配置初始化大小、最小、最大 -->
-        <property name="maxActive" value="${jdbc.maxActive}" />
-        <property name="initialSize" value="${jdbc.initialSize}" />
-        <property name="minIdle" value="1" />
+        <property name="maxActive" value="${jdbc.maxActive}"/>
+        <property name="initialSize" value="${jdbc.initialSize}"/>
+        <property name="minIdle" value="1"/>
         <!-- 配置获取连接等待超时的时间   修改为10秒钟-->
-        <property name="maxWait" value="10000" />
+        <property name="maxWait" value="10000"/>
         <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
-        <property name="timeBetweenEvictionRunsMillis" value="60000" />
+        <property name="timeBetweenEvictionRunsMillis" value="60000"/>
         <!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
-        <property name="minEvictableIdleTimeMillis" value="300000" />
-        <property name="validationQuery" value="SELECT 'x'" />
-        <property name="testWhileIdle" value="true" />
-        <property name="testOnBorrow" value="false" />
-        <property name="testOnReturn" value="false" />
+        <property name="minEvictableIdleTimeMillis" value="300000"/>
+        <property name="validationQuery" value="SELECT 'x'"/>
+        <property name="testWhileIdle" value="true"/>
+        <property name="testOnBorrow" value="false"/>
+        <property name="testOnReturn" value="false"/>
         <!-- 配置监控统计拦截的filters -->
-        <property name="filters" value="stat,log4j2" />
+        <property name="filters" value="stat,log4j2"/>
     </bean>
-    
+
     <!-- MyBatis SqlSessionFactoryBean -->
     <bean id="accountSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="accountDataSource"/>
-        <property name="mapperLocations" value="classpath*:com/bupt/flowpackage/mybatis/account/**/mapping/*Mapper.xml"/>
+        <property name="mapperLocations"
+                  value="classpath*:com/bupt/flowpackage/mybatis/account/**/mapping/*Mapper.xml"/>
         <property name="configLocation" value="classpath:mybatis-config.xml"/>
     </bean>
 
-    <!-- 扫描basePackage下所有以@MyBatisRepository标识的 接口-->
+    <!-- 扫描basePackage下所有以@MyBatisRepository标识的 接口, Dao接口-->
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
         <property name="basePackage" value="com.bupt.flowpackage.mybatis.account"/>
         <property name="annotationClass" value="com.bupt.flowpackage.common.annotation.MyBatisRepository"/>
-        <property name="sqlSessionFactoryBeanName" value="accountSqlSessionFactory" />
+        <property name="sqlSessionFactoryBeanName" value="accountSqlSessionFactory"/>
     </bean>
 
-	<bean id="accountTxManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-		<property name="dataSource" ref="accountDataSource" />
-		<qualifier value="account" />
-	</bean>
-    
-	<!-- 支持通过注解添加事务 -->
-	<tx:annotation-driven proxy-target-class="true"	transaction-manager="accountTxManager" />
-    
+    <!-- 代码获取Dao实例：
+        SqlSessionFactory sessionFactory = null;
+        String resource = "configuration.xml";
+        try {
+            sessionFactory = new SqlSessionFactoryBuilder().build(Resources
+            .getResourceAsReader(resource));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        SqlSession sqlSession = sessionFactory.openSession();
+        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+    -->
+
+    <!-- 4. 事务管理 : DataSourceTransactionManager dataSource:引用上面定义的数据源 -->
+    <bean id="accountTxManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="accountDataSource"/>
+        <qualifier value="account"/>
+    </bean>
+
+    <!-- 支持通过注解添加事务 -->
+    <tx:annotation-driven proxy-target-class="true" transaction-manager="accountTxManager"/>
+
 </beans>
